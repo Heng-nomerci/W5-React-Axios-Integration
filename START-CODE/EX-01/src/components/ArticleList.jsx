@@ -1,33 +1,32 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function ArticleList() {
   const [articles, setArticles] = useState([]);
+  const navigate = useNavigate();
   // Fetch all articles when component mounts
   useEffect(() => {
     fetchArticles();
   }, []);
 
   const fetchArticles = async () => {
-    // Fetch articles from the API32e
+    // Fetch articles from the API
     try {
-      const response = await fetch("/api/articles");
-      const data = await response.json();
-      setArticles(data);
+      const response = await axios.get("http://localhost:3000/articles");
+      setArticles(response.data);
     } catch (error) {
-      console.error("Failed", error);
+      console.error("Error fetching articles:", error);
     }
   };
 
   const deleteArticle = async (id) => {
     // Delete an article by ID
     try {
-      await fetch(`/api/articles/${id}`, {
-        method: "DELETE",
-      });
+      await axios.delete(`http://localhost:3000/articles/${id}`);
       fetchArticles();
     } catch (error) {
-      console.error("Failed", error);
+      console.error("Error deleting article:", error);
     }
   };
 
@@ -55,7 +54,7 @@ export default function ArticleList() {
             <button
               onClick={() => {
                 // Navigate to update article form with article ID /articles/update/${article.id}
-                navigate(`/articles/update/${article.id}`);
+                navigate(`/update/${article.id}`);
               }}
             >
               Update

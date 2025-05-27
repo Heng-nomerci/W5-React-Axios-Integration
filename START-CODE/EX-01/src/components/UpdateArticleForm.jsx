@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function UpdateArticleForm() {
   const [form, setForm] = useState({
@@ -7,25 +9,28 @@ export default function UpdateArticleForm() {
     journalistId: "",
     categoryId: "",
   });
+  const { id } = useParams(); // Get article ID from URL parameters
 
-  const { id } = userParams();
   // Fetch to prefill a form and update an existing article
   useEffect(() => {
     fetchArticle();
   }, [id]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
   const fetchArticle = async () => {
+    // Fetch article by ID to prefill the form
     try {
       const response = await axios.get(`http://localhost:3000/articles/${id}`);
       setForm(response.data);
       console.log("Fetched article:", response.data);
     } catch (error) {
-      console.error("Error", error);
+      console.error("Error fetching article:", error);
     }
   };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Update article with axios
@@ -33,8 +38,8 @@ export default function UpdateArticleForm() {
       await axios.put(`http://localhost:3000/articles/${id}`, form);
       alert("Article updated successfully!");
     } catch (error) {
-      console.error("Error", error);
-      alert("Failed");
+      console.error("Error updating article:", error);
+      alert("Failed to update article.");
     }
   };
 
@@ -73,7 +78,9 @@ export default function UpdateArticleForm() {
         required
       />
       <br />
-      <button type="submit">Update</button>
+      <button onClick={handleSubmit} type="submit">
+        Update
+      </button>
     </form>
   );
 }

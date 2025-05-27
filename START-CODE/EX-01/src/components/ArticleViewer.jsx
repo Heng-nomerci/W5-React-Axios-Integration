@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function ArticlePage() {
   const { id } = useParams();
@@ -9,18 +10,19 @@ export default function ArticlePage() {
 
   useEffect(() => {
     // Function to fetch article by ID
-    const fetchArticle = async () => {
+    const fetchArticleById = async () => {
       try {
-        const res = await fetch(`/api/articles/${id}`);
-        if (!res.ok) throw new Error("Failed");
-        const data = await res.json();
-      } catch (err) {
-        setError(err.message);
-      } finally {
+        const response = await axios.get(
+          `http://localhost:3000/articles/${id}`
+        );
+        setArticle(response.data);
+        setLoading(false);
+      } catch {
+        setError("Failed to fetch article. Please try again later.");
         setLoading(false);
       }
     };
-    fetchArticle();
+    fetchArticleById();
   }, [id]);
 
   if (loading) return <div>Loading article...</div>;
